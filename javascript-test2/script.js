@@ -14,12 +14,16 @@ let rx = 3, ry = 300;
 let dx = 3, dy = 2;
 let enemyhp = 100; // エネミーのHP
 
-// --- 追加：弾丸の設定 ---
+// --- 弾丸の設定 ---
 const bullets = []; // 弾丸を格納する配列
 const bulletSpeed = 7; // 弾の速さ
 let shotInterval = 0; // 連射制限用
 
 onkeydown = onkeyup = e => keys[e.key] = e.type === 'keydown';
+
+const enemyBullets = [];
+const enemyShotIntervalMax = 60;
+let enemyShotInterval = 0;
 
 function loop() {
   // --- 1. 移動処理 ---
@@ -68,6 +72,17 @@ if (keys['d'] && shotInterval <= 0) {
   rx = Math.max(r, Math.min(c.width - r, rx));
   ry = Math.max(r, Math.min(c.height - r, ry));
 
+  // --- 敵の弾発射（4方向）---
+if (enemyShotInterval <= 0) {
+  enemyBullets.push({ bx: rx, by: ry, vx: 4, vy: 0 });  // 右
+  enemyBullets.push({ bx: rx, by: ry, vx: -4, vy: 0 }); // 左
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 4 });  // 下
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -4 }); // 上
+
+  enemyShotInterval = enemyShotIntervalMax;
+}
+enemyShotInterval--;
+
   // --- 4. 当たり判定と描画 ---
   ctx.clearRect(0, 0, c.width, c.height);
 
@@ -99,6 +114,38 @@ if (keys['d'] && shotInterval <= 0) {
     // 画面外に出たら消す
     if (b.bx > c.width) bullets.splice(i, 1);
   }
+
+    //球の描写
+  ctx.fillStyle = 'purple';
+ for (let i = enemyBullets.length - 1; i >= 0; i--) {
+  let b = enemyBullets[i];
+
+  b.bx += b.vx;
+  b.by += b.vy;
+
+  ctx.beginPath();
+  ctx.arc(b.bx, b.by, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // プレイヤーとの当たり判定
+  const dist = Math.hypot(b.bx - x, b.by - y);
+  if (dist < r + 5) {
+    if (invincible <= 0) {
+      hp -= 5;
+      invincible = 30;
+    }
+    enemyBullets.splice(i, 1);
+    continue;
+  }
+
+  // 画面外削除
+  if (
+    b.bx < 0 || b.bx > c.width ||
+    b.by < 0 || b.by > c.height
+  ) {
+    enemyBullets.splice(i, 1);
+  }
+}
 
   // プレイヤーとエネミーの接触判定
   let playercolor = 'blue';
