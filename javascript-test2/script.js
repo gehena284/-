@@ -32,10 +32,29 @@ function loop() {
   y = Math.max(r, Math.min(c.height - r, y));
 
   // --- 2. 弾丸の発射処理 (Spaceキー) ---
-  if (keys[' '] && shotInterval <= 0) {
-    bullets.push({ bx: x, by: y }); // プレイヤーの位置から発射
-    shotInterval = 10; // 次の弾まで10フレーム待つ
-  }
+// W（上）
+if (keys['w'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: 0, vy: -bulletSpeed });
+  shotInterval = 10;
+}
+
+// S（下）
+if (keys['s'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: 0, vy: bulletSpeed });
+  shotInterval = 10;
+}
+
+// A（左）
+if (keys['a'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: -bulletSpeed, vy: 0 });
+  shotInterval = 10;
+}
+
+// D（右）
+if (keys['d'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: bulletSpeed, vy: 0 });
+  shotInterval = 10;
+}
   if (shotInterval > 0) shotInterval--;
 
   // --- 3. エネミーの移動処理 ---
@@ -56,7 +75,8 @@ function loop() {
   ctx.fillStyle = 'black';
   for (let i = bullets.length - 1; i >= 0; i--) {
     let b = bullets[i];
-    b.bx += bulletSpeed; // 右方向に飛ぶ（必要に応じて方向は変えられます）
+   b.bx += b.vx;
+   b.by += b.vy;
 
     // 弾の描画
     ctx.beginPath();
