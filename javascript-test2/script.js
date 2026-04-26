@@ -66,8 +66,13 @@ function loop() {
     // エネミーとの当たり判定
     const distE = Math.hypot(b.bx - rx, b.by - ry);
     if (distE < r + 5) {
-      enemyhp -= 10;   // エネミーにダメージ
+      enemyhp -= 5;   // エネミーにダメージ
       bullets.splice(i, 1); // 弾を消す
+
+        // ノックバック
+      rx += Math.cos(angle) * -30;
+      ry += Math.sin(angle) * -30;
+
       continue;
     }
 
