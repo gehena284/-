@@ -12,7 +12,7 @@ let invincible = 0;
 // 赤い円（オート）の設定
 let rx = 3, ry = 300;
 let dx = 3, dy = 2;
-let enemyhp = 100; // エネミーのHP
+let enemyhp = 200; // エネミーのHP
 
 // --- 弾丸の設定 ---
 const bullets = []; // 弾丸を格納する配列
@@ -63,8 +63,8 @@ if (keys['d'] && shotInterval <= 0) {
 
   // --- 3. エネミーの移動処理 ---
   const angle = Math.atan2(y - ry, x - rx);
-  const targetDx = Math.cos(angle) * 2.9;
-  const targetDy = Math.sin(angle) * 2;
+  const targetDx = Math.cos(angle) * 3;
+  const targetDy = Math.sin(angle) * 3;
   dx += (targetDx - dx) * 0.1;
   dy += (targetDy - dy) * 0.1;
   rx += dx;
@@ -74,10 +74,10 @@ if (keys['d'] && shotInterval <= 0) {
 
   // --- 敵の弾発射（4方向）---
 if (enemyShotInterval <= 0) {
-  enemyBullets.push({ bx: rx, by: ry, vx: 4, vy: 0 });  // 右
-  enemyBullets.push({ bx: rx, by: ry, vx: -4, vy: 0 }); // 左
-  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 4 });  // 下
-  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -4 }); // 上
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 0 });  // 右
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 0 }); // 左
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 5 });  // 下
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -5 }); // 上
 
   enemyShotInterval = enemyShotIntervalMax;
 }
@@ -105,14 +105,20 @@ enemyShotInterval--;
       bullets.splice(i, 1); // 弾を消す
 
         // ノックバック
-      rx += Math.cos(angle) * -30;
-      ry += Math.sin(angle) * -30;
+      const hitAngle = Math.atan2(ry - b.by, rx - b.bx);
+      rx += Math.cos(hitAngle) * 10;
+      ry += Math.sin(hitAngle) * 10;
 
       continue;
     }
 
     // 画面外に出たら消す
-    if (b.bx > c.width) bullets.splice(i, 1);
+  if (
+  b.bx < 0 || b.bx > c.width ||
+  b.by < 0 || b.by > c.height
+) {
+  bullets.splice(i, 1);
+}
   }
 
     //球の描写
