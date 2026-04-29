@@ -1,6 +1,8 @@
 const c = document.getElementById('myCanvas');
 const ctx = c.getContext('2d');
 
+let gameStarted = false;
+
 // 青い円（プレイヤー）の設定
 let x = 200, y = 200;
 const r = 20, s = 5;
@@ -25,7 +27,22 @@ const enemyBullets = [];
 const enemyShotIntervalMax = 60;
 let enemyShotInterval = 0;
 
+c.addEventListener("click", () => {
+  gameStarted = true;
+});
+
 function loop() {
+  if (!gameStarted) {
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "black";
+    ctx.font = "30px sans-serif";
+    ctx.fillText("CLICK TO START", 100, 200);
+    requestAnimationFrame(loop);
+    return;
+  }
+
+  
+
   // --- 1. 移動処理 ---
   if (keys.ArrowUp) y -= s;
   if (keys.ArrowDown) y += s;
