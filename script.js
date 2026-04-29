@@ -3,7 +3,7 @@ const ctx = c.getContext('2d');
 
 let gameStarted = false;
 
-// 青い円（プレイヤー）の設定
+// プレイヤーの設定
 let x = 200, y = 200;
 s = 5;
 const keys = {};
@@ -186,7 +186,7 @@ enemyShotInterval--;
     }
   }
 
-  // 青い円（プレイヤー）
+  // プレイヤー
   ctx.drawImage(
   playerImg,
   x - playerSize / 2,
