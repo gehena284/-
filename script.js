@@ -5,7 +5,7 @@ let gameStarted = false;
 
 // 青い円（プレイヤー）の設定
 let x = 200, y = 200;
-const r = 20, s = 5;
+s = 5;
 const keys = {};
 
 let hp = 100;
@@ -14,6 +14,7 @@ let invincible = 0;
 // 赤い円（オート）の設定
 let rx = 3, ry = 300;
 let dx = 3, dy = 2;
+const r = 20
 let enemyhp = 200; // エネミーのHP
 
 // --- 弾丸の設定 ---
@@ -26,6 +27,11 @@ onkeydown = onkeyup = e => keys[e.key] = e.type === 'keydown';
 const enemyBullets = [];
 const enemyShotIntervalMax = 60;
 let enemyShotInterval = 0;
+
+const playerImg = new Image();
+playerImg.src = "player.png"; // ここに画像パス
+
+const playerSize = 110; // 見た目サイズ
 
 c.addEventListener("click", () => {
   gameStarted = true;
@@ -171,10 +177,9 @@ enemyShotInterval--;
 }
 
   // プレイヤーとエネミーの接触判定
-  let playercolor = 'blue';
-  const distP = Math.hypot(x - rx, y - ry);
-  if (distP < r * 2) {
-    playercolor = 'yellow';
+    const playerRadius = playerSize / 2;
+    const distP = Math.hypot(x - rx, y - ry);
+    if (distP < playerRadius + r) {
     if (invincible <= 0) {
       hp -= 10;
       invincible = 30;
@@ -182,11 +187,13 @@ enemyShotInterval--;
   }
 
   // 青い円（プレイヤー）
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fillStyle = playercolor;
-  ctx.fill();
-  ctx.stroke();
+  ctx.drawImage(
+  playerImg,
+  x - playerSize / 2,
+  y - playerSize / 2,
+  playerSize,
+  playerSize
+);
 
   // 赤い円（エネミー）
   ctx.beginPath();
