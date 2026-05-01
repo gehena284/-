@@ -3,16 +3,16 @@ const ctx = c.getContext('2d');
 
 let gameStarted = false;
 
-// プレイヤーの設定
+// 青い円（プレイヤー）の設定
 let x = 200, y = 200;
-s = 5;
+let s = 5;
 const keys = {};
 
 let hp = 100;
 let invincible = 0; 
 
 // 赤い円（オート）の設定
-let rx = 3, ry = 300;
+let rx = 4, ry = 300;
 let dx = 3, dy = 2;
 const r = 20
 let enemyhp = 200; // エネミーのHP
@@ -101,6 +101,10 @@ if (enemyShotInterval <= 0) {
   enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 0 }); // 左
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 5 });  // 下
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -5 }); // 上
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: -5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: -5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 5 }); 
 
   enemyShotInterval = enemyShotIntervalMax;
 }
