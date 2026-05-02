@@ -84,16 +84,33 @@ if (keys['d'] && shotInterval <= 0) {
 }
   if (shotInterval > 0) shotInterval--;
 
-  // --- 3. エネミーの移動処理 ---
-  const angle = Math.atan2(y - ry, x - rx);
-  const targetDx = Math.cos(angle) * 3;
-  const targetDy = Math.sin(angle) * 3;
-  dx += (targetDx - dx) * 0.1;
-  dy += (targetDy - dy) * 0.1;
-  rx += dx;
-  ry += dy;
-  rx = Math.max(r, Math.min(c.width - r, rx));
-  ry = Math.max(r, Math.min(c.height - r, ry));
+// --- 3. エネミーの移動処理 ---
+
+if (Math.random() < 0.04) {
+  dx = (Math.random() - 0.5) * 30;
+  dy = (Math.random() - 0.5) * 30;
+}
+
+// 2. プレイヤーをゆるやかに追尾する要素
+const angle = Math.atan2(y - ry, x - rx);
+const chaseForce = 0.2; // 追尾の強さ
+dx += Math.cos(angle) * chaseForce;
+dy += Math.sin(angle) * chaseForce;
+
+// 3. 移動速度が速くなりすぎないように制限
+const speed = Math.hypot(dx, dy);
+if (speed > 5) {
+  dx = (dx / speed) * 5;
+  dy = (dy / speed) * 5;
+}
+
+// 4. 座標を更新
+rx += dx;
+ry += dy;
+
+// 5. 画面外に出ないように制限
+rx = Math.max(r, Math.min(c.width - r, rx));
+ry = Math.max(r, Math.min(c.height - r, ry));
 
   // --- 敵の弾発射（4方向）---
 if (enemyShotInterval <= 0) {
