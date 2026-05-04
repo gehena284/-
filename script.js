@@ -216,6 +216,8 @@ enemyShotInterval--;
   playerSize
 );
 
+  ctx.imageSmoothingEnabled = false;
+
   // 赤い円（エネミー）
   ctx.beginPath();
   ctx.arc(rx, ry, r, 0, Math.PI * 2);
