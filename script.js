@@ -84,6 +84,15 @@ if (keys['d'] && shotInterval <= 0) {
 }
   if (shotInterval > 0) shotInterval--;
 
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+  keys[e.key.toLowerCase()] = e.type === 'keydown';
+
 // --- 3. エネミーの移動処理 ---
 
 if (Math.random() < 0.04) {
@@ -207,10 +216,13 @@ enemyShotInterval--;
   }
 
   // プレイヤー
-if (invincible % 4 < 2) {  // ★ 無敵中の点滅エフェクト
-    ctx.drawImage(playerImg, x - playerSize / 2, y - playerSize / 2, playerSize, playerSize); 
-  } 
-
+ ctx.drawImage(
+  playerImg,
+  x - playerSize / 2,
+  y - playerSize / 2,
+  playerSize,
+  playerSize
+);
   ctx.imageSmoothingEnabled = false;
 
   // 赤い円（エネミー）
@@ -238,6 +250,7 @@ if (invincible % 4 < 2) {  // ★ 無敵中の点滅エフェクト
     ctx.font = '70px sans-serif';
     ctx.fillText("YOU WIN", 100, 200);
     return; 
+    keys[e.key.toLowerCase()] = e.type === 'keydown';
   }
 
   requestAnimationFrame(loop);
