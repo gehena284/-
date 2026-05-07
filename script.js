@@ -12,7 +12,7 @@ let hp = 100;
 let invincible = 0; 
 
 // 赤い円（オート）の設定
-let rx = 4, ry = 300;
+let rx = 500, ry = 300;
 let dx = 3, dy = 2;
 const r = 20
 let enemyhp = 200; // エネミーのHP
@@ -150,8 +150,8 @@ enemyShotInterval--;
 
         // ノックバック
       const hitAngle = Math.atan2(ry - b.by, rx - b.bx);
-      rx += Math.cos(hitAngle) * 10;
-      ry += Math.sin(hitAngle) * 10;
+      rx += Math.cos(hitAngle) * 15;
+      ry += Math.sin(hitAngle) * 15;
 
       continue;
     }
@@ -208,13 +208,9 @@ enemyShotInterval--;
   }
 
   // プレイヤー
-  ctx.drawImage(
-  playerImg,
-  x - playerSize / 2,
-  y - playerSize / 2,
-  playerSize,
-  playerSize
-);
+if (invincible % 4 < 2) {  // ★ 無敵中の点滅エフェクト
+    ctx.drawImage(playerImg, x - playerSize / 2, y - playerSize / 2, playerSize, playerSize); 
+  } 
 
   ctx.imageSmoothingEnabled = false;
 
