@@ -112,17 +112,16 @@ ry += dy;
 rx = Math.max(r, Math.min(c.width - r, rx));
 ry = Math.max(r, Math.min(c.height - r, ry));
 
+if (rx <= r || rx >= c.width - r) dx *= -1;
+if (ry <= r || ry >= c.height - r) dy *= -1;
+
   // --- 敵の弾発射（4方向）---
 if (enemyShotInterval <= 0) {
   enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 0 });  // 右
   enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 0 }); // 左
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 5 });  // 下
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -5 }); // 上
-  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: -5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: -5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 5 }); 
-
+  
   enemyShotInterval = enemyShotIntervalMax;
 }
 enemyShotInterval--;
