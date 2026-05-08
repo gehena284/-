@@ -3,7 +3,7 @@ const ctx = c.getContext('2d');
 
 let gameStarted = false;
 
-// プレイヤーの設定
+// 青い円（プレイヤー）の設定
 let x = 200, y = 200;
 let s = 5;
 const keys = {};
@@ -11,158 +11,225 @@ const keys = {};
 let hp = 100;
 let invincible = 0; 
 
-// エネミー（赤い円）の設定
-let rx = 500, ry = 300;
+// 赤い円（オート）の設定
+let rx = 4, ry = 300;
 let dx = 3, dy = 2;
-const r = 20;
-let enemyhp = 200;
+const r = 20
+let enemyhp = 200; // エネミーのHP
 
-// 弾丸の設定
-const bullets = []; 
-const bulletSpeed = 7; 
-let shotInterval = 0; 
+// --- 弾丸の設定 ---
+const bullets = []; // 弾丸を格納する配列
+const bulletSpeed = 7; // 弾の速さ
+let shotInterval = 0; // 連射制限用
+
+onkeydown = onkeyup = e => keys[e.key] = e.type === 'keydown';
 
 const enemyBullets = [];
 const enemyShotIntervalMax = 60;
 let enemyShotInterval = 0;
 
-// 画像の読み込み
 const playerImg = new Image();
-playerImg.src = "player.png"; 
-const playerSize = 50; // 見た目サイズを調整（110だと当たり判定に対して大きすぎるため）
+playerImg.src = "player.png"; // ここに画像パス
 
-// キー入力イベント（修正点：toLowerCase()をここで行うと効率的）
-window.onkeydown = window.onkeyup = e => {
-  keys[e.key.toLowerCase()] = e.type === 'keydown';
-};
+const playerSize = 110; // 見た目サイズ
 
 c.addEventListener("click", () => {
-  if(!gameStarted) gameStarted = true;
+  gameStarted = true;
 });
 
 function loop() {
-  ctx.clearRect(0, 0, c.width, c.height);
-
   if (!gameStarted) {
+    ctx.clearRect(0, 0, c.width, c.height);
     ctx.fillStyle = "black";
     ctx.font = "30px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("CLICK TO START", c.width / 2, c.height / 2);
+    ctx.fillText("CLICK TO START", 100, 200);
     requestAnimationFrame(loop);
     return;
   }
 
+  
+
   // --- 1. 移動処理 ---
-  if (keys.arrowup) y -= s;
-  if (keys.arrowdown) y += s;
-  if (keys.arrowleft) x -= s;
-  if (keys.arrowright) x += s;
+  if (keys.ArrowUp) y -= s;
+  if (keys.ArrowDown) y += s;
+  if (keys.ArrowLeft) x -= s;
+  if (keys.ArrowRight) x += s;
 
   x = Math.max(r, Math.min(c.width - r, x));
   y = Math.max(r, Math.min(c.height - r, y));
 
-  // --- 2. 弾丸の発射処理 ---
-  if (shotInterval <= 0) {
-    let fired = false;
-    if (keys.w) { bullets.push({ bx: x, by: y, vx: 0, vy: -bulletSpeed }); fired = true; }
-    else if (keys.s) { bullets.push({ bx: x, by: y, vx: 0, vy: bulletSpeed }); fired = true; }
-    else if (keys.a) { bullets.push({ bx: x, by: y, vx: -bulletSpeed, vy: 0 }); fired = true; }
-    else if (keys.d) { bullets.push({ bx: x, by: y, vx: bulletSpeed, vy: 0 }); fired = true; }
-    
-    if (fired) shotInterval = 10;
-  }
+  // --- 2. 弾丸の発射処理 (Spaceキー) ---
+// W（上）
+if (keys['w'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: 0, vy: -bulletSpeed });
+  shotInterval = 10;
+}
+
+// S（下）
+if (keys['s'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: 0, vy: bulletSpeed });
+  shotInterval = 10;
+}
+
+// A（左）
+if (keys['a'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: -bulletSpeed, vy: 0 });
+  shotInterval = 10;
+}
+
+// D（右）
+if (keys['d'] && shotInterval <= 0) {
+  bullets.push({ bx: x, by: y, vx: bulletSpeed, vy: 0 });
+  shotInterval = 10;
+}
   if (shotInterval > 0) shotInterval--;
 
-  // --- 3. エネミーの移動処理 ---
-  if (Math.random() < 0.04) {
-    dx = (Math.random() - 0.5) * 10;
-    dy = (Math.random() - 0.5) * 10;
-  }
+// --- 3. エネミーの移動処理 ---
 
-  const angle = Math.atan2(y - ry, x - rx);
-  const chaseForce = 0.2; 
-  dx += Math.cos(angle) * chaseForce;
-  dy += Math.sin(angle) * chaseForce;
+if (Math.random() < 0.04) {
+  dx = (Math.random() - 0.5) * 30;
+  dy = (Math.random() - 0.5) * 30;
+}
 
-  const speed = Math.hypot(dx, dy);
-  if (speed > 5) {
-    dx = (dx / speed) * 5;
-    dy = (dy / speed) * 5;
-  }
+// 2. プレイヤーをゆるやかに追尾する要素
+const angle = Math.atan2(y - ry, x - rx);
+const chaseForce = 0.2; // 追尾の強さ
+dx += Math.cos(angle) * chaseForce;
+dy += Math.sin(angle) * chaseForce;
 
-  rx += dx;
-  ry += dy;
+// 3. 移動速度が速くなりすぎないように制限
+const speed = Math.hypot(dx, dy);
+if (speed > 5) {
+  dx = (dx / speed) * 5;
+  dy = (dy / speed) * 5;
+}
 
-  // 壁跳ね返り
-  if (rx <= r || rx >= c.width - r) dx *= -1;
-  if (ry <= r || ry >= c.height - r) dy *= -1;
+// 4. 座標を更新
+rx += dx;
+ry += dy;
 
-  // エネミーの弾発射
-  if (enemyShotInterval <= 0) {
-    enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 0 }, { bx: rx, by: ry, vx: -5, vy: 0 }, { bx: rx, by: ry, vx: 0, vy: 5 }, { bx: rx, by: ry, vx: 0, vy: -5 });
-    enemyShotInterval = enemyShotIntervalMax;
-  }
-  enemyShotInterval--;
+// 5. 画面外に出ないように制限
+rx = Math.max(r, Math.min(c.width - r, rx));
+ry = Math.max(r, Math.min(c.height - r, ry));
 
-  // --- 4. 弾の更新と当たり判定 ---
-  
-  // プレイヤーの弾
+  // --- 敵の弾発射（4方向）---
+if (enemyShotInterval <= 0) {
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 0 });  // 右
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 0 }); // 左
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 5 });  // 下
+  enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -5 }); // 上
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: -5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: -5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 5 }); 
+
+  enemyShotInterval = enemyShotIntervalMax;
+}
+enemyShotInterval--;
+
+  // --- 4. 当たり判定と描画 ---
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  // 弾丸の移動とエネミーへの当たり判定
   ctx.fillStyle = 'black';
   for (let i = bullets.length - 1; i >= 0; i--) {
     let b = bullets[i];
-    b.bx += b.vx; b.by += b.vy;
+   b.bx += b.vx;
+   b.by += b.vy;
+
+    // 弾の描画
     ctx.beginPath();
     ctx.arc(b.bx, b.by, 5, 0, Math.PI * 2);
     ctx.fill();
 
-    if (Math.hypot(b.bx - rx, b.by - ry) < r + 5) {
-      enemyhp -= 5;
-      bullets.splice(i, 1);
-      rx += (Math.random() - 0.5) * 20; // 簡易ノックバック
+    // エネミーとの当たり判定
+    const distE = Math.hypot(b.bx - rx, b.by - ry);
+    if (distE < r + 5) {
+      enemyhp -= 5;   // エネミーにダメージ
+      bullets.splice(i, 1); // 弾を消す
+
+        // ノックバック
+      const hitAngle = Math.atan2(ry - b.by, rx - b.bx);
+      rx += Math.cos(hitAngle) * 10;
+      ry += Math.sin(hitAngle) * 10;
+
       continue;
     }
-    if (b.bx < 0 || b.bx > c.width || b.by < 0 || b.by > c.height) bullets.splice(i, 1);
+
+    // 画面外に出たら消す
+  if (
+  b.bx < 0 || b.bx > c.width ||
+  b.by < 0 || b.by > c.height
+) {
+  bullets.splice(i, 1);
+}
   }
 
-  // エネミーの弾
+    //球の描写
   ctx.fillStyle = 'purple';
-  for (let i = enemyBullets.length - 1; i >= 0; i--) {
-    let b = enemyBullets[i];
-    b.bx += b.vx; b.by += b.vy;
-    ctx.beginPath();
-    ctx.arc(b.bx, b.by, 5, 0, Math.PI * 2);
-    ctx.fill();
+ for (let i = enemyBullets.length - 1; i >= 0; i--) {
+  let b = enemyBullets[i];
 
-    if (Math.hypot(b.bx - x, b.by - y) < 15 + 5) { // プレイヤーの当たり判定を15px程度に
-      if (invincible <= 0) { hp -= 5; invincible = 30; }
-      enemyBullets.splice(i, 1);
-      continue;
+  b.bx += b.vx;
+  b.by += b.vy;
+
+  ctx.beginPath();
+  ctx.arc(b.bx, b.by, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // プレイヤーとの当たり判定
+  const dist = Math.hypot(b.bx - x, b.by - y);
+  if (dist < r + 5) {
+    if (invincible <= 0) {
+      hp -= 5;
+      invincible = 30;
     }
-    if (b.bx < 0 || b.bx > c.width || b.by < 0 || b.by > c.height) enemyBullets.splice(i, 1);
+    enemyBullets.splice(i, 1);
+    continue;
   }
+
+  // 画面外削除
+  if (
+    b.bx < 0 || b.bx > c.width ||
+    b.by < 0 || b.by > c.height
+  ) {
+    enemyBullets.splice(i, 1);
+  }
+}
 
   // プレイヤーとエネミーの接触判定
-  if (Math.hypot(x - rx, y - ry) < 30 + r && invincible <= 0) {
-    hp -= 10;
-    invincible = 30;
+    const playerRadius = playerSize / 2;
+    const distP = Math.hypot(x - rx, y - ry);
+    if (distP < playerRadius + r) {
+    if (invincible <= 0) {
+      hp -= 10;
+      invincible = 30;
+    }
   }
 
-  // --- 5. 描画 ---
-  if (invincible % 4 < 2) { // 点滅演出
-    ctx.drawImage(playerImg, x - playerSize / 2, y - playerSize / 2, playerSize, playerSize);
-  }
+  // プレイヤー
+  ctx.drawImage(
+  playerImg,
+  x - playerSize / 2,
+  y - playerSize / 2,
+  playerSize,
+  playerSize
+);
 
+  ctx.imageSmoothingEnabled = false;
+
+  // 赤い円（エネミー）
   ctx.beginPath();
   ctx.arc(rx, ry, r, 0, Math.PI * 2);
   ctx.fillStyle = 'red';
   ctx.fill();
+  ctx.stroke();
 
   if (invincible > 0) invincible--;
 
-  // UI
+  // UI表示
   ctx.fillStyle = 'black';
   ctx.font = '20px sans-serif';
-  ctx.textAlign = "left";
   ctx.fillText("PLAYER HP: " + hp, 10, 30);
   ctx.fillText("ENEMY HP: " + enemyhp, 10, 60);
 
