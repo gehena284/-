@@ -118,10 +118,10 @@ if (enemyShotInterval <= 0) {
   enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 0 }); // 左
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: 5 });  // 下
   enemyBullets.push({ bx: rx, by: ry, vx: 0, vy: -5 }); // 上
-  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: -5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: -5, vy: 5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: -5 }); 
-  enemyBullets.push({ bx: rx, by: ry, vx: 5, vy: 5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: -3.5, vy: -3.5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: -3.5, vy: 3.5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 3.5, vy: -3.5 }); 
+  enemyBullets.push({ bx: rx, by: ry, vx: 3.5, vy: 3.5 }); 
 
   enemyShotInterval = enemyShotIntervalMax;
 }
