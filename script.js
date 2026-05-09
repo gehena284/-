@@ -60,25 +60,25 @@ function loop() {
 
   // --- 2. 弾丸の発射処理 (Spaceキー) ---
 // W（上）
-if (keys['w'] && shotInterval <= 0) {
+if ((keys['w'] || keys['W']) && shotInterval <= 0) {
   bullets.push({ bx: x, by: y, vx: 0, vy: -bulletSpeed });
   shotInterval = 10;
 }
 
 // S（下）
-if (keys['s'] && shotInterval <= 0) {
+if ((keys['s'] || keys['S']) && shotInterval <= 0) {
   bullets.push({ bx: x, by: y, vx: 0, vy: bulletSpeed });
   shotInterval = 10;
 }
 
 // A（左）
-if (keys['a'] && shotInterval <= 0) {
+if ((keys['a'] || keys['A']) && shotInterval <= 0) {
   bullets.push({ bx: x, by: y, vx: -bulletSpeed, vy: 0 });
   shotInterval = 10;
 }
 
 // D（右）
-if (keys['d'] && shotInterval <= 0) {
+if ((keys['d'] || keys['D']) && shotInterval <= 0) {
   bullets.push({ bx: x, by: y, vx: bulletSpeed, vy: 0 });
   shotInterval = 10;
 }
@@ -208,6 +208,8 @@ enemyShotInterval--;
   }
 
   // プレイヤー
+  ctx.imageSmoothingEnabled = false;
+
   ctx.drawImage(
   playerImg,
   x - playerSize / 2,
@@ -215,8 +217,6 @@ enemyShotInterval--;
   playerSize,
   playerSize
 );
-
-  ctx.imageSmoothingEnabled = false;
 
   // 赤い円（エネミー）
   ctx.beginPath();
